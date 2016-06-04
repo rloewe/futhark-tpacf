@@ -49,12 +49,12 @@ fun *[i64, numBins2] doCompute(
                     let dot = xOuter * xInner + yOuter * yInner + zOuter * zInner
                     loop ((min, max) = (0, numBins)) = while (min+1) < max do
                         let k = (min+max) / 2 in
-                        if dot >= unsafe binb[k]
+                        if dot >= binb[k]
                         then (min, k)
                         else (k, max)
                     in
                     let dBins = replicate(numBins2, 0i64) in
-                    unsafe if dot >= binb[min]
+                    if dot >= binb[min]
                     then let dBins[min] = dBins[min] + 1i64 in dBins
                     else if dot < binb[max]
                         then let dBins[max+1] = dBins[max+1] + 1i64 in dBins
@@ -72,6 +72,7 @@ fun *[i64, numBins2] doComputeSelf(
     i32 numBins2,
     [f64, numBBins] binb
 ) =
+-- loop version
     let val = map(fn [i64, numBins2] (vec3 vec, i32 index) =>
                     let (xOuter, yOuter, zOuter) = vec
                     loop (dBins = replicate(numBins2, 0i64)) = for (index+1) <= j < numD do
@@ -79,11 +80,11 @@ fun *[i64, numBins2] doComputeSelf(
                         let dot = xOuter * xInner + yOuter * yInner + zOuter * zInner
                         loop ((min, max) = (0, numBins)) = while (min+1) < max do
                             let k = (min+max) / 2 in
-                            unsafe if dot >= binb[k]
+                            if dot >= binb[k]
                             then (min, k)
                             else (k, max)
                         in
-                        unsafe if dot >= binb[min]
+                        if dot >= binb[min]
                         then let dBins[min] = dBins[min] + 1i64 in dBins
                         else if dot < binb[max]
                             then let dBins[max+1] = dBins[max+1] + 1i64 in dBins
@@ -92,6 +93,30 @@ fun *[i64, numBins2] doComputeSelf(
                 , zip(data, iota(numD)))
     in
     sumBins(val)
+-- Does not compile in opencl
+--    let val = map(fn [i64, numBins2] (vec3 vec, i32 index) =>
+--                    let (xOuter, yOuter, zOuter) = vec
+--                    let vals = map (fn *[i64, numBins2] (i32 inner) =>
+--                            let j = inner + index + 1
+--                            let (xInner, yInner, zInner) = unsafe data[j]
+--                            let dot = xOuter * xInner + yOuter * yInner + zOuter * zInner
+--                            loop ((min, max) = (0, numBins)) = while (min+1) < max do
+--                                let k = (min+max) / 2 in
+--                                unsafe if dot >= binb[k]
+--                                then (min, k)
+--                                else (k, max)
+--                            in
+--                            let dBins = replicate(numBins2, 0i64) in
+--                            unsafe if dot >= binb[min]
+--                            then let dBins[min] = dBins[min] + 1i64 in dBins
+--                            else if dot < binb[max]
+--                                then let dBins[max+1] = dBins[max+1] + 1i64 in dBins
+--                                else let dBins[max] = dBins[max] + 1i64 in dBins
+--                        , iota(numD - (index + 1)))
+--                    in sumBins(vals)
+--                , zip(data, iota(numD)))
+--    in
+--    sumBins(val)
 
 fun vec3 fixPoints(f64 ra, f64 dec) =
     let rarad = dec2rad(ra)
