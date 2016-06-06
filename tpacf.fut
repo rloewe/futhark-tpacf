@@ -45,7 +45,7 @@ fun *[i64, numBins2] doCompute(
     i32 numBins2,
     [f64, numBBins] binb
 ) =
-    let val = map(fn *[i64, numBins2] (f64 xOuter, f64 yOuter, f64 zOuter) =>
+    let value = map(fn *[i64, numBins2] (f64 xOuter, f64 yOuter, f64 zOuter) =>
             streamMap(fn *[i64, numBins2] (int chunk, [vec3] inner) =>
                     loop (dBins = replicate(numBins2, 0i64)) = for i < chunk do
                         let (xInner, yInner, zInner) = inner[i]
@@ -65,7 +65,7 @@ fun *[i64, numBins2] doCompute(
                 , data2)
         , data1)
     in
-    sumBins(val)
+    sumBins(value)
 
 fun *[i64, numBins2] doComputeSelf(
     [vec3, numD] data,
@@ -74,7 +74,7 @@ fun *[i64, numBins2] doComputeSelf(
     [f64, numBBins] binb
 ) =
 -- loop version
-    let val = map(fn [i64, numBins2] (vec3 vec, i32 index) =>
+    let value = map(fn [i64, numBins2] (vec3 vec, i32 index) =>
                     let (xOuter, yOuter, zOuter) = vec
                     loop (dBins = replicate(numBins2, 0i64)) = for (index+1) <= j < numD do
                         let (xInner, yInner, zInner) = data[j]
@@ -93,7 +93,7 @@ fun *[i64, numBins2] doComputeSelf(
                     in dBins
                 , zip(data, iota(numD)))
     in
-    sumBins(val)
+    sumBins(value)
 
 fun vec3 fixPoints(f64 ra, f64 dec) =
     let rarad = dec2rad(ra)
