@@ -32,6 +32,7 @@ fun i32 numBins() = 20
 fun [f64, num] iota32(i32 num) =
     map(f64, iota(num))
 
+-- Prøv streamRed i stedet
 fun *[i64, numBins] sumBins([[i64, numBins], numBinss] bins) =
     map(fn i64 ([i64] binIndex) => reduce(+, 0i64, binIndex), transpose(bins))
 
@@ -139,10 +140,16 @@ fun *[i64] main(
     let Randompoints = map(fn [vec3, numR] ([f64, numR] x, [f64, numR] y) =>
                             map(fixPoints, zip(x,y)),
                            zip(randompointsx, randompointsy))
-    let (RRs, DRs) = unzip(map(fn (*[i64], *[i64]) ([vec3, numR] random) =>
-                                (doComputeSelf(random, numBins(), numBins2, binb),
-                                doCompute(Datapoints, random, numBins(), numBins2, binb)),
-                               Randompoints))
+    --let (RRs, DRs) = unzip(map(fn (*[i64], *[i64]) ([vec3, numR] random) =>
+    --                            (doComputeSelf(random, numBins(), numBins2, binb),
+    --                            doCompute(Datapoints, random, numBins(), numBins2, binb)),
+    --                           Randompoints))
+    let RRs = map(fn *[i64] ([vec3, numR] random) =>
+                                doComputeSelf(random, numBins(), numBins2, binb),
+                              Randompoints)
+    let DRs = map(fn *[i64] ([vec3, numR] random) =>
+                                doCompute(Datapoints, random, numBins(), numBins2, binb),
+                              Randompoints)
     loop ((res, DD, RR, DR) = (replicate(numBins()*3, 0i64),
                                doComputeSelf(Datapoints, numBins(), numBins2, binb),
                                sumBins(RRs),
