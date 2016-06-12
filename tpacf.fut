@@ -108,22 +108,22 @@ fun *[i64, 60] main(
     let binb = map(fn f64 (f64 k) =>
                         cos64((10.0 ** (log10(min_arcmin()) + k*1.0/bins_per_dec())) / 60.0 * dec2rad(1.0)),
                     iota32(numBins() + 1))
-    let Datapoints = map(fixPoints, zip(datapointsx, datapointsy))
-    let Randompoints = map(fn [vec3, numR] ([f64, numR] x, [f64, numR] y) =>
+    let datapoints = map(fixPoints, zip(datapointsx, datapointsy))
+    let randompoints = map(fn [vec3, numR] ([f64, numR] x, [f64, numR] y) =>
                             map(fixPoints, zip(x,y)),
                            zip(randompointsx, randompointsy))
-    let (RRs, DRs) = unzip(map(fn (*[i64], *[i64]) ([vec3, numR] random) =>
+    let (rrs, drs) = unzip(map(fn (*[i64], *[i64]) ([vec3, numR] random) =>
                                 (doComputeSelf(random, numBins(), numBins2, binb),
-                                doCompute(Datapoints, random, numBins(), numBins2, binb)),
-                               Randompoints))
-    loop ((res, DD, RR, DR) = (replicate(numBins()*3, 0i64),
-                               doComputeSelf(Datapoints, numBins(), numBins2, binb),
-                               sumBins(RRs),
-                               sumBins(DRs))) = for i < numBins() do
-        let res[i*3] = DD[i+1]
-        let res[i*3+1] = DR[i+1]
-        let res[i*3+2] = RR[i+1]
+                                doCompute(datapoints, random, numBins(), numBins2, binb)),
+                                randompoints))
+    loop ((res, dd, rr, dr) = (replicate(numBins()*3, 0i64),
+                               doComputeSelf(datapoints, numBins(), numBins2, binb),
+                               sumBins(rrs),
+                               sumBins(drs))) = for i < numBins() do
+        let res[i*3] = dd[i+1]
+        let res[i*3+1] = dr[i+1]
+        let res[i*3+2] = rr[i+1]
         in
-        (res, DD, RR, DR)
+        (res, dd, rr, dr)
     in
     res
