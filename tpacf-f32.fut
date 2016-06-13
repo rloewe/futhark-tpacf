@@ -61,6 +61,7 @@ fun *[i64, numBins2] doCompute(
                                     else if dot < binb[max]
                                         then max+1
                                         else max
+                        in
                         unsafe let dBins[index] = dBins[index] + 1i64 in dBins
                     in dBins
                 , data2)
@@ -91,6 +92,7 @@ fun *[i64, numBins2] doComputeSelf(
                                     else if dot < binb[max]
                                         then max+1
                                         else max
+                        in
                         unsafe let dBins[index] = dBins[index] + 1i64 in dBins
                     in dBins
                 , zip(data, iota(numD)))
