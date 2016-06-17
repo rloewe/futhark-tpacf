@@ -1,19 +1,10 @@
--- Who cares?
+-- An implementation of the tpacf benchmark from the parboil benchmark suite
 --
 -- ==
 -- compiled input @ small/input-data
 -- output @ small/output-data
-
-
-
-
 -- compiled input @ medium/input-data
 -- output @ medium/output-data
---
-
-
-
--- Well no
 -- compiled input @ large/input-data
 -- output @ large/output-data
 
